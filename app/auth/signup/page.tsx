@@ -29,8 +29,17 @@ export default function SignUp() {
   } = useFormik({
     initialValues: { name: '', email: '', password: '' },
     validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values, action) => {
+      await fetch('/api/users', {
+        method: 'POST',
+        body: JSON.stringify(values),
+      }).then(async (res) => {
+        if (res.ok) {
+          const result = await res.json();
+          console.log(result);
+        }
+        action.setSubmitting(false);
+      });
     },
   });
 
@@ -65,7 +74,12 @@ export default function SignUp() {
         crossOrigin={undefined}
         value={password}
       />
-      <Button type='submit' className='w-full' placeholder={undefined}>
+      <Button
+        disabled={isSubmitting}
+        type='submit'
+        className='w-full'
+        placeholder={undefined}
+      >
         Sign up
       </Button>
       <div className=''>
